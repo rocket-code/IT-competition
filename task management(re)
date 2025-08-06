@@ -1,0 +1,81 @@
+// 과제 한 줄을 분석하는 함수
+function parseAssignment(line) {
+  const lower = line.toLowerCase();
+  const majorKeywords = ["전공", "ai", "인공지능", "파이썬"];
+  const isMajor = majorKeywords.some(k => lower.includes(k));
+
+  let type = "기타";
+  let estimatedTime = 2;
+
+  if (lower.includes("코딩") || lower.includes("구현")) {
+    type = "코딩"; estimatedTime = 5;
+  } else if (lower.includes("레포트") || lower.includes("보고서")) {
+    type = "보고서"; estimatedTime = 3;
+  } else if (lower.includes("영상") || lower.includes("촬영")) {
+    type = "영상 제작"; estimatedTime = 15;
+  } else if (lower.includes("ppt") || lower.includes("발표")) {
+    type = "PPT"; estimatedTime = 4;
+  } else if (lower.includes("대본") || lower.includes("작성")) {
+    type = "대본"; estimatedTime = 3;
+  } else if (lower.includes("문제풀이") || lower.includes("문제")) {
+    type = "문제풀이"; estimatedTime = 2;
+  }
+
+  const deadlineMatch = line.match(/(\d{1,2})월\s?(\d{1,2})일/);
+  let deadline = null;
+  if (deadlineMatch) {
+    const month = deadlineMatch[1].padStart(2, '0');
+    const day = deadlineMatch[2].padStart(2, '0');
+    deadline = `2025-${month}-${day}`;
+  }
+
+  const assignmentName = line.split(/\/|전공|교양|\d{1,2}월\s?\d{1,2}일/)[0].trim();
+
+  return {
+    과제명: assignmentName,
+    과제유형: type,
+    소요시간: estimatedTime,
+    전공유무: isMajor ? "✅" : "",
+    전공계산용: isMajor,
+    마감기한: deadline
+  };
+}
+
+// main
+const lines = textInput3.value.split('\n').filter(line => line.trim() !== '');
+if (!lines.length) {
+  utils.showNotification({
+    title: "❌ 입력 오류",
+    description: "한 줄 이상의 과제 정보를 입력하세요.",
+    notificationType: "error"
+  });
+  return;
+}
+
+const today = new Date();
+
+const parsed = lines.map(parseAssignment).map(task => {
+  const due = new Date(task.마감기한);
+  const daysLeft = Math.max(1, (due - today) / (1000 * 60 * 60 * 24));
+  const deadlineScore = 10 / daysLeft;
+  const majorScore = task.전공계산용 ? 3 : 0;
+  const timeScore = task.소요시간 * 0.5;
+
+  const priority = Math.round((deadlineScore + majorScore + timeScore) * 10) / 10;
+
+  return {
+    과제명: task.과제명,
+    과제유형: task.과제유형,
+    소요시간: task.소요시간,
+    전공유무: task.전공유무,
+    마감기한: task.마감기한,
+    우선순위: priority
+  };
+});
+
+// 우선순위 높은 순으로 정렬
+parsed.sort((a, b) => b.우선순위 - a.우선순위);
+
+// 🔁 Table로 return (setData 안 씀!)
+console.log("🔍 분석 완료 과제 목록", parsed);
+return parsed;
