@@ -1,77 +1,94 @@
+// App.js
+import 'react-native-gesture-handler';
 import React from 'react';
-import { View, Button, Linking, Alert, StyleSheet, Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-export default function App() {
-  const openLink = async (url, errorMessage) => {
-    try {
-      const supported = await Linking.canOpenURL(url);
-      if (supported) {
-        await Linking.openURL(url);
-      } else {
-        Alert.alert(errorMessage);
-      }
-    } catch {
-      Alert.alert(errorMessage);
-    }
-  };
+// 스크린들
+import LibrarySelectorScreen from './LibrarySelectorScreen';
+import CentralLibraryScreen from './CentralLibraryScreen';
+import SujeongLibraryScreen from './SujeongLibraryScreen';
+import UnjeongLibraryScreen from './UnjeongLibraryScreen';
+import SeatRoom from './SeatRoom';
 
+const Stack = createNativeStackNavigator();
+
+function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>📱 성신여대 캠퍼스 앱</Text>
+      <Text style={styles.title}>🎓 성신 허브</Text>
 
-      <View style={styles.buttonWrapper}>
-        <Button
-          title="📺 YouTube 열기"
-          onPress={() => openLink('https://www.youtube.com/', '유튜브를 열 수 없습니다.')}
-          color="#FF0000"
-        />
-      </View>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('LibrarySelector')}
+      >
+        <Text style={styles.buttonText}>📚 도서관 좌석 예약</Text>
+      </TouchableOpacity>
 
-      <View style={styles.buttonWrapper}>
-        <Button
-          title="🏫 스마트캠퍼스 접속"
-          onPress={() => openLink('https://smart.sungshin.ac.kr/login/index.do', '스마트캠퍼스를 열 수 없습니다.')}
-          color="#0066CC"
-        />
-      </View>
+      <TouchableOpacity style={styles.button} onPress={() => {}}>
+        <Text style={styles.buttonText}>✅ 스마트 출석</Text>
+      </TouchableOpacity>
 
-      <View style={styles.buttonWrapper}>
-        <Button
-          title="📝 스마트 출석 열기"
-          onPress={() => openLink('https://smart.sungshin.ac.kr/student/clgr/attd/smartAttList.do', '출석 페이지를 열 수 없습니다.')}
-          color="#00AA55"
-        />
-      </View>
+      <TouchableOpacity style={styles.button} onPress={() => {}}>
+        <Text style={styles.buttonText}>📆 비교과 프로그램</Text>
+      </TouchableOpacity>
 
-      <View style={styles.buttonWrapper}>
-        <Button
-          title="🌸 생리 유고 신청"
-          onPress={() => openLink('https://smart.sungshin.ac.kr/student/clgr/attd/accAbscList.do', '생리 유고 신청 페이지를 열 수 없습니다.')}
-          color="#CC3399"
-        />
-      </View>
+      <TouchableOpacity style={styles.button} onPress={() => {}}>
+        <Text style={styles.buttonText}>🎁 S-마일리지 조회</Text>
+      </TouchableOpacity>
     </View>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerTitleAlign: 'center',
+        }}
+      >
+        <Stack.Screen name="Home" component={HomeScreen} options={{ title: '성신 허브' }} />
+        <Stack.Screen name="LibrarySelector" component={LibrarySelectorScreen} options={{ title: '도서관 선택' }} />
+        <Stack.Screen name="CentralLibrary" component={CentralLibraryScreen} options={{ title: '중앙도서관 열람실' }} />
+        <Stack.Screen name="SujeongLibrary" component={SujeongLibraryScreen} options={{ title: '수정관 열람실' }} />
+        <Stack.Screen name="UnjeongLibrary" component={UnjeongLibraryScreen} options={{ title: '운정도서관 열람실' }} />
+        <Stack.Screen name="SeatRoom" component={SeatRoom} options={{ title: '좌석 현황' }} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff8f0',
+    backgroundColor: '#fffafc',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
   },
   title: {
-    fontSize: 22,
+    fontSize: 28,
+    marginBottom: 40,
     fontWeight: 'bold',
-    marginBottom: 24,
-    color: '#333',
+    color: '#8a2be2',
   },
-  buttonWrapper: {
-    width: '80%',
+  button: {
+    backgroundColor: '#a491d3',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
     marginVertical: 10,
-    borderRadius: 10,
-    overflow: 'hidden',
+    width: '100%',
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    textAlign: 'center',
   },
 });
+
+
+
