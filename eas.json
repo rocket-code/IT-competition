@@ -1,0 +1,31 @@
+{
+  "cli": {
+    "version": ">= 16.13.2",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "image": "sdk-53"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "image": "sdk-53"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "android": {
+        "image": "sdk-53"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
