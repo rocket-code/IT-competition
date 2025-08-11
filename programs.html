@@ -1,0 +1,65 @@
+<html><body><h2>비교과 프로그램 목록</h2><ul>
+                <li>
+                    [인증_수리통계데이터사이언스학부] 핀테크 & 데이터사이언스 콜로퀴움 
+                    <button onclick="sendUrl('https://sunshine.sungshin.ac.kr/site/reservation/lecture/lectureDetail?reservegroupid=1&menuid=001003003001002&reserveprogramid=L&pagesize=10&searchislocalopenyn=N&orderby=ing&currentpage=1&lecturegroupid=4811')">신청하기</button>
+                </li>
+            
+                <li>
+                    기업별 신속 컨설팅 
+                    <button onclick="sendUrl('https://sunshine.sungshin.ac.kr/site/reservation/lecture/lectureDetail?reservegroupid=1&menuid=001003003001002&reserveprogramid=L&pagesize=10&searchislocalopenyn=N&orderby=ing&currentpage=1&lecturegroupid=4306')">신청하기</button>
+                </li>
+            
+                <li>
+                    [PASS2 인정] 채용 트렌드를 반영한 산업·직무 특강 
+                    <button onclick="sendUrl('https://sunshine.sungshin.ac.kr/site/reservation/lecture/lectureDetail?reservegroupid=1&menuid=001003003001002&reserveprogramid=L&pagesize=10&searchislocalopenyn=N&orderby=ing&currentpage=1&lecturegroupid=4304')">신청하기</button>
+                </li>
+            
+                <li>
+                    [PASS2 인정] [졸특2025] AI 활용 모의 면접 코칭(2차) 
+                    <button onclick="sendUrl('https://sunshine.sungshin.ac.kr/site/reservation/lecture/lectureDetail?reservegroupid=1&menuid=001003003001002&reserveprogramid=L&pagesize=10&searchislocalopenyn=N&orderby=ing&currentpage=1&lecturegroupid=4670')">신청하기</button>
+                </li>
+            
+                <li>
+                    [인증_AI융합학부] 지능형 IoT 분야에서의 성공을 위한 지능형 IoT 전공 개요 설명 및 진로/ 취업 탐색 세미나 
+                    <button onclick="sendUrl('https://sunshine.sungshin.ac.kr/site/reservation/lecture/lectureDetail?reservegroupid=1&menuid=001003003001002&reserveprogramid=L&pagesize=10&searchislocalopenyn=N&orderby=ing&currentpage=1&lecturegroupid=4335')">신청하기</button>
+                </li>
+            
+                <li>
+                    참여수당 받고 일경험도 하는 국민취업지원제도( 졸업예정자 및 졸업자 대상) 
+                    <button onclick="sendUrl('https://sunshine.sungshin.ac.kr/site/reservation/lecture/lectureDetail?reservegroupid=1&menuid=001003003001002&reserveprogramid=L&pagesize=10&searchislocalopenyn=N&orderby=ing&currentpage=1&lecturegroupid=4812')">신청하기</button>
+                </li>
+            
+                <li>
+                    [졸특2025] 구글 애널리틱스(Google Analytics) 자격 대비반 
+                    <button onclick="sendUrl('https://sunshine.sungshin.ac.kr/site/reservation/lecture/lectureDetail?reservegroupid=1&menuid=001003003001002&reserveprogramid=L&pagesize=10&searchislocalopenyn=N&orderby=ing&currentpage=1&lecturegroupid=4806')">신청하기</button>
+                </li>
+            
+                <li>
+                    [졸특2025] 취업역량강화 캠프 
+                    <button onclick="sendUrl('https://sunshine.sungshin.ac.kr/site/reservation/lecture/lectureDetail?reservegroupid=1&menuid=001003003001002&reserveprogramid=L&pagesize=10&searchislocalopenyn=N&orderby=ing&currentpage=1&lecturegroupid=4801')">신청하기</button>
+                </li>
+            
+                <li>
+                    [인증_공예과] 도자 창업 멘토링 및 차 도구 제작 워크숍 
+                    <button onclick="sendUrl('https://sunshine.sungshin.ac.kr/site/reservation/lecture/lectureDetail?reservegroupid=1&menuid=001003003001002&reserveprogramid=L&pagesize=10&searchislocalopenyn=N&orderby=ing&currentpage=1&lecturegroupid=4798')">신청하기</button>
+                </li>
+            
+                <li>
+                    [인증_공예과] 마케팅 개념을 활용한 공예 전공자의 취업 포트폴리오 제작 
+                    <button onclick="sendUrl('https://sunshine.sungshin.ac.kr/site/reservation/lecture/lectureDetail?reservegroupid=1&menuid=001003003001002&reserveprogramid=L&pagesize=10&searchislocalopenyn=N&orderby=ing&currentpage=1&lecturegroupid=4797')">신청하기</button>
+                </li>
+            
+            </ul>
+            <script>
+            function sendUrl(url) {
+                fetch('http://localhost:5000/save_url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: url
+                })
+                .then(() => alert('신청 페이지를 자동으로 엽니다.'))
+                .catch(() => alert('서버와 연결되지 않았습니다.'))
+            }
+            </script>
+            </body></html>
+        
