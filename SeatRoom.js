@@ -5,7 +5,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 export default function SeatRoom({ route }) {
   const { roomName, totalSeats } = route.params;
   
-  // 예약된 좌석 번호 (예시: 3번, 7번 예약됨)
+  
   const [reservedSeats, setReservedSeats] = useState([3, 7]);
 
   const handleSeatPress = (seatNumber) => {
@@ -77,4 +77,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
 });
