@@ -6,14 +6,14 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  Linking,
   ScrollView,
   TouchableOpacity,
+  Linking,
+  FlatList,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// 스크린들 (경로에 맞게 파일 준비하세요)
 import LibrarySelectorScreen from './LibrarySelectorScreen';
 import CentralLibraryScreen from './CentralLibraryScreen';
 import SujeongLibraryScreen from './SujeongLibraryScreen';
@@ -22,75 +22,49 @@ import SeatRoom from './SeatRoom';
 
 const Stack = createNativeStackNavigator();
 
-// 웹 링크 열기 함수
-const openLink = async (url, errorMessage) => {
-  try {
-    const supported = await Linking.canOpenURL(url);
-    if (supported) {
-      await Linking.openURL(url);
-    } else {
-      Alert.alert(errorMessage);
-    }
-  } catch {
-    Alert.alert(errorMessage);
-  }
-};
-
 function HomeScreen({ navigation }) {
   const [userId, setUserId] = useState('');
   const [userPw, setUserPw] = useState('');
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // 비교과 크롤링 시작 함수
   const startCrawling = async () => {
     if (!userId || !userPw) {
-      setTimeout(() => {
-        Alert.alert('입력 오류', '아이디와 비밀번호를 입력하세요.');
-      }, 50);
+      Alert.alert('입력 오류', '아이디와 비밀번호를 입력하세요.');
       return;
     }
 
+    setLoading(true);
     try {
-      console.log('서버 요청 보냄:', userId, userPw);
-      // 여기를 Flask 서버 IP와 포트로 바꾸세요! 예: 172.20.10.4:5678
-      const response = await fetch('http://172.20.10.3:5678/start-crawling', {
+      const response = await fetch('http://192.168.200.175:5000/start-crawling', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          user_pw: userPw,
-        }),
+        body: JSON.stringify({ user_id: userId, user_pw: userPw }),
       });
 
-      console.log('응답 상태:', response.status);
       if (!response.ok) {
         throw new Error(`서버 오류: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log('서버 응답 데이터:', data);
 
       if (data.status === 'success') {
-        setTimeout(() => {
-          Alert.alert('크롤링 성공!', `프로그램 수: ${data.programs.length}`);
-        }, 50);
+        setPrograms(data.programs);
       } else {
-        setTimeout(() => {
-          Alert.alert('실패', data.message || '오류가 발생했습니다.');
-        }, 50);
+        Alert.alert('실패', data.message || '오류가 발생했습니다.');
+        setPrograms([]);
       }
     } catch (error) {
-      console.error('fetch 에러:', error);
-      setTimeout(() => {
-        Alert.alert('에러', '서버에 연결할 수 없습니다.');
-      }, 50);
+      Alert.alert('에러', '서버에 연결할 수 없습니다.');
+      setPrograms([]);
     }
+    setLoading(false);
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>🎓 성신 허브</Text>
 
-      {/* 도서관 좌석 예약 */}
       <TouchableOpacity
         style={[styles.button, { backgroundColor: '#00AA55' }]}
         onPress={() => navigation.navigate('LibrarySelector')}
@@ -98,35 +72,27 @@ function HomeScreen({ navigation }) {
         <Text style={styles.buttonText}>📚 도서관 좌석 예약</Text>
       </TouchableOpacity>
 
-      {/* 스마트 출석 열기 */}
       <TouchableOpacity
         style={[styles.button, { backgroundColor: '#0066CC' }]}
         onPress={() =>
-          openLink(
-            'https://smart.sungshin.ac.kr/student/clgr/attd/smartAttList.do',
-            '출석 페이지를 열 수 없습니다.'
-          )
+          Linking.openURL('https://smart.sungshin.ac.kr/student/clgr/attd/smartAttList.do')
         }
       >
         <Text style={styles.buttonText}>📝 스마트 출석 열기</Text>
       </TouchableOpacity>
 
-      {/* 생리 유고 신청 */}
       <TouchableOpacity
         style={[styles.button, { backgroundColor: '#CC3399' }]}
         onPress={() =>
-          openLink(
-            'https://smart.sungshin.ac.kr/student/clgr/attd/accAbscList.do',
-            '생리 유고 신청 페이지를 열 수 없습니다.'
-          )
+          Linking.openURL('https://smart.sungshin.ac.kr/student/clgr/attd/accAbscList.do')
         }
       >
         <Text style={styles.buttonText}>💊 생리 유고 신청</Text>
       </TouchableOpacity>
 
-      {/* 비교과 프로그램 자동신청 */}
+      {/* 아이디 / 비밀번호 입력 */}
       <View style={[styles.buttonWrapper, { marginTop: 30, alignItems: 'center' }]}>
-        <Text style={styles.inputLabel}>아이디 입력</Text>
+        <Text style={styles.inputLabel}>아이디</Text>
         <TextInput
           style={styles.input}
           placeholder="아이디"
@@ -135,7 +101,7 @@ function HomeScreen({ navigation }) {
           autoCapitalize="none"
         />
 
-        <Text style={styles.inputLabel}>비밀번호 입력</Text>
+        <Text style={styles.inputLabel}>비밀번호</Text>
         <TextInput
           style={styles.input}
           placeholder="비밀번호"
@@ -145,12 +111,36 @@ function HomeScreen({ navigation }) {
         />
 
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#FF8800', marginTop: 20, width: '100%', maxWidth: 320 }]}
+          style={[
+            styles.button,
+            { backgroundColor: loading ? '#ccc' : '#FF8800', marginTop: 20, width: '100%', maxWidth: 320 },
+          ]}
           onPress={startCrawling}
+          disabled={loading}
         >
-          <Text style={styles.buttonText}>📚 비교과 프로그램 신청</Text>
+          <Text style={styles.buttonText}>
+            {loading ? '로딩 중...' : '📚 비교과 프로그램 목록 불러오기'}
+          </Text>
         </TouchableOpacity>
       </View>
+
+      {/* 크롤링 결과 프로그램 목록 */}
+      {programs.length > 0 && (
+        <>
+          <Text style={[styles.title, { marginTop: 30, fontSize: 20 }]}>진행 중 프로그램</Text>
+          {programs.map((item, idx) => (
+            <View key={idx.toString()} style={styles.programItemRow}>
+              <Text style={styles.programTitle}>{item.title}</Text>
+              <TouchableOpacity
+                style={styles.applyButton}
+                onPress={() => Linking.openURL('https://portal.sungshin.ac.kr/sso/login.jsp')}
+              >
+                <Text style={styles.applyButtonText}>신청하기</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </>
+      )}
     </ScrollView>
   );
 }
@@ -158,13 +148,8 @@ function HomeScreen({ navigation }) {
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          headerTitleAlign: 'center',
-        }}
-      >
-        <Stack.Screen name="Home" component={HomeScreen} options={{ title: '성신 허브' }} />
+      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerTitleAlign: 'center' }}>
+        <Stack.Screen name="Home" component={HomeScreen} options={{ title: '' }} />
         <Stack.Screen name="LibrarySelector" component={LibrarySelectorScreen} options={{ title: '도서관 선택' }} />
         <Stack.Screen name="CentralLibrary" component={CentralLibraryScreen} options={{ title: '중앙도서관 열람실' }} />
         <Stack.Screen name="SujeongLibrary" component={SujeongLibraryScreen} options={{ title: '수정관 열람실' }} />
@@ -179,7 +164,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 24,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: '#fffafc',
     flexGrow: 1,
   },
@@ -212,6 +197,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 6,
     color: '#555',
+    alignSelf: 'flex-start',
   },
   input: {
     height: 40,
@@ -222,5 +208,30 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     backgroundColor: '#fff',
     width: '100%',
+  },
+  programItemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#eee',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 10,
+    width: '100%',
+  },
+  programTitle: {
+    fontSize: 16,
+    flex: 1,
+    marginRight: 10,
+  },
+  applyButton: {
+    backgroundColor: '#FF8800',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  applyButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
